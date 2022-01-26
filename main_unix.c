@@ -9,8 +9,8 @@
 #define MAX_word_length 40
 #define MAX_word_loaded 10
 #define easy_wave 10
-#define regular_wave 8
-#define difficult_wave 5
+#define medium_wave 8
+#define hard_wave 5
 
 struct words{
 char word[MAX_word_length];
@@ -18,12 +18,12 @@ int number_of_inserted_letters;
 
 };
 
-int maxx,maxy,last_word=3; //TODO: change 3 to MAX_word_loaded-1
+int maxx,maxy,last_word=3,level=0,wave,score=0; //TODO: change 3 to MAX_word_loaded-1
 struct words words[MAX_word_loaded];
 
 void read_from_file(char lines[][MAX_word_length],const char file_path[30],int first_line, int last_line);
 void borders(const int difficulity, const int score);
-void game_play(struct words word[],double speed);
+void game_play(struct words word[],int level );
 int menu();
 
 void my_callback_on_key_arrival(char c)
@@ -43,9 +43,9 @@ int main()
 
   initscr();
   getmaxyx(stdscr,maxy,maxx);
-  borders(0,0);
-  menu();
-   borders(3,0);
+  borders(level,0);
+  level=menu();
+  borders(level,0);
   char line[MAX_word_loaded][MAX_word_length];
   read_from_file(line,"file.txt",1,4);
 
@@ -56,7 +56,7 @@ int main()
   //words[2].number_of_inserted_letters=3;
  
   pthread_t thread_id = start_listening(my_callback_on_key_arrival);
-  game_play(words,1);
+  game_play(words,level);
  
 
   pthread_join(thread_id, NULL);
@@ -111,8 +111,21 @@ void borders(const int difficulity, const int score){
   refresh();
   attroff(COLOR_PAIR(1)|COLOR_PAIR(2));
 }
-void game_play(struct words word[],double speed ){
+void game_play(struct words word[],int level ){
   int words_count=last_word+1;
+  long int speed;
+  switch(level){
+    case 1:
+    	speed=easy_wave*1000000/(maxy-3);
+    	break;
+    case 2:
+    	speed=medium_wave*1000000/(maxy-3);
+    	break;
+    case 3:
+        speed=hard_wave*1000000/(maxy-3);
+    	break;
+  }
+	
   int current_x[words_count],current_y=-words_count+2;
   srand(time(NULL));
   init_pair(2, COLOR_RED, COLOR_BLACK);
@@ -137,10 +150,10 @@ void game_play(struct words word[],double speed ){
       refresh();
       }
     }
-    sleep(speed);
+    usleep(speed);
     clear();
     current_y++;
-    
+
     
     if(last_word<0){
  endwin();
