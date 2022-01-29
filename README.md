@@ -10,7 +10,7 @@ a simple Game to improve typing skills.
 Ubuntu and debain Based GNU-Linux Distros:
 
 ```bash
-  $ git clone https://github.com/ariasaki/wordgame
+  $ git clone https://github.com/ariasaki/word-game
   $ sudo apt install gcc libcurses-dev
   $ cd word-game
   $ gcc main_unix.c -pthread -lncurses
